@@ -6,29 +6,31 @@ package speech
 import (
 	"bytes"
 	"context"
+	"io"
 	"os"
 	"time"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	mp3 "github.com/hajimehoshi/go-mp3"
-	oto "github.com/hajimehoshi/oto/v2"
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep/speaker"
 	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 	klog "k8s.io/klog/v2"
 )
 
-type SpeechInit struct {
+type SpeechOpts struct {
 	VoiceType    texttospeechpb.SsmlVoiceGender
 	LanguageCode string
 }
 
 type SpeechClient struct {
-	config SpeechInit
+	config SpeechOpts
 
 	speechClient                 *texttospeech.Client
 	googleApplicationCredentials string
 }
 
-func New(ctx context.Context, config SpeechInit) (*SpeechClient, error) {
+func New(ctx context.Context, config SpeechOpts) (*SpeechClient, error) {
 	klog.V(6).Infof("speech.New ENTER\n")
 
 	if config.LanguageCode == "" {
@@ -106,32 +108,31 @@ func (sc *SpeechClient) TextToSpeech(ctx context.Context, text string) ([]byte, 
 func (sc *SpeechClient) PlayAudio(stream []byte) error {
 	klog.V(6).Infof("SpeechClient.PlayAudio ENTER\n")
 
-	d, err := mp3.NewDecoder(bytes.NewReader(stream))
+	stringReader := bytes.NewReader(stream)
+	stringReadCloser := io.NopCloser(stringReader)
+
+	streamer, format, err := mp3.Decode(stringReadCloser)
 	if err != nil {
-		klog.V(1).Infof("NewDecoder Failed. Err: %v\n", err)
+		klog.V(1).Infof("mp3.Decode Failed. Err: %v\n", err)
 		klog.V(6).Infof("SpeechClient.PlayAudio LEAVE\n")
 		return err
 	}
+	streamer.Close()
 
-	c, ready, err := oto.NewContext(d.SampleRate(), 2, 2)
-	if err != nil {
-		klog.V(1).Infof("NewContext Failed. Err: %v\n", err)
-		klog.V(6).Infof("SpeechClient.PlayAudio LEAVE\n")
-		return err
-	}
-	<-ready
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/60))
 
-	p := c.NewPlayer(d)
-	defer p.Close()
-	p.Play()
+	buffer := beep.NewBuffer(format)
+	buffer.Append(streamer)
 
-	klog.V(6).Infof("Length: %d[bytes]\n", d.Length())
-	for {
-		time.Sleep(time.Second)
-		if !p.IsPlaying() {
-			break
-		}
-	}
+	speechData := buffer.Streamer(0, buffer.Len())
+
+	done := make(chan bool)
+	speaker.Play(beep.Seq(speechData, beep.Callback(func() {
+		done <- true
+	})))
+
+	// wait until done... blocking!
+	<-done
 
 	klog.V(3).Infof("PlayAudio Succeeded\n")
 	klog.V(6).Infof("SpeechClient.PlayAudio LEAVE\n")

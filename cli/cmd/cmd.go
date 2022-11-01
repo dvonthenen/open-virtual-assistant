@@ -5,37 +5,64 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 
+	cfginterfaces "github.com/dvonthenen/symbl-go-sdk/pkg/client/interfaces"
+
+	assistantimpl "github.com/dvonthenen/open-virtual-assistant/cli/cmd/pkg/assistant"
+	assistant "github.com/dvonthenen/open-virtual-assistant/pkg/assistant"
 	speech "github.com/dvonthenen/open-virtual-assistant/pkg/speech"
-	klog "k8s.io/klog/v2"
 )
 
 func main() {
-	klog.InitFlags(nil)
-	flag.Set("v", "6")
-	flag.Parse()
-
-	// Instantiates a client.
+	/*
+		Init
+	*/
 	ctx := context.Background()
 
-	client, err := speech.New(ctx, speech.SpeechInit{
-		VoiceType:    speech.SpeechVoiceFemale,
-		LanguageCode: speech.DefaultLanguageCode,
+	assistant.Init(assistant.AssistantInit{
+		LogLevel: assistant.LogLevelStandard,
 	})
+
+	/*
+		Assistant
+	*/
+	callback := assistantimpl.NewInsightHandler(&speech.SpeechOpts{
+		VoiceType: speech.SpeechVoiceFemale,
+	})
+
+	config := &cfginterfaces.StreamingConfig{
+		InsightTypes: []string{"topic", "question", "action_item", "follow_up"},
+		Config: cfginterfaces.Config{
+			MeetingTitle:        "my-meeting",
+			ConfidenceThreshold: 0.7,
+			SpeechRecognition: cfginterfaces.SpeechRecognition{
+				Encoding:        "LINEAR16",
+				SampleRateHertz: 16000,
+			},
+		},
+		Speaker: cfginterfaces.Speaker{
+			Name:   "Jane Doe",
+			UserID: "user@email.com",
+		},
+	}
+
+	myAssistant, err := assistant.NewWithConfig(ctx, config, callback)
 	if err != nil {
-		fmt.Errorf("New failed. Err: %v\n", err)
+		fmt.Printf("assistant.New failed. Err: %v\n", err)
 		os.Exit(1)
 	}
-	defer client.Close()
 
-	text := "How much wood could a woodchuck chuck? If a woodchuck could chuck wood? As much wood as a woodchuck could chuck, If a woodchuck could chuck wood."
+	fmt.Printf("\nStarting the Open Virtual Assistant...\n\n")
 
-	err = client.Play(ctx, text)
+	// blocking call
+	err = myAssistant.Start()
 	if err != nil {
-		fmt.Errorf("Play failed. Err: %v\n", err)
+		fmt.Printf("myAssistant.Start failed. Err: %v\n", err)
 		os.Exit(1)
 	}
+
+	// clean up
+	myAssistant.Stop()
 }
