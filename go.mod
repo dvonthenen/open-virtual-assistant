@@ -5,7 +5,7 @@ go 1.18
 require (
 	cloud.google.com/go/texttospeech v1.3.0
 	github.com/antzucaro/matchr v0.0.0-20210222213004-b04723ef80f0
-	github.com/dvonthenen/symbl-go-sdk v0.1.1
+	github.com/dvonthenen/symbl-go-sdk v0.1.2
 	github.com/faiface/beep v1.1.0
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 	k8s.io/klog/v2 v2.80.1
