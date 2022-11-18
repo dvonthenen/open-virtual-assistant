@@ -76,8 +76,8 @@ github.com/cncf/xds/go v0.0.0-20211011173535-cb28da3451f1/go.mod h1:eXthEFrGJvWH
 github.com/d4l3k/messagediff v1.2.2-0.20190829033028-7e0a312ae40b/go.mod h1:Oozbb1TVXFac9FtSIxHBMnBCq2qeH/2KkEQxENCrlLo=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dvonthenen/symbl-go-sdk v0.1.1 h1:FVK4lPNAVHGgj6HvBrOfW3aRO89QM0KBzsNiyaNM5/4=
-github.com/dvonthenen/symbl-go-sdk v0.1.1/go.mod h1:okOH54W2rVCto2VRWNL7R1iYCBndHYebfjo5rjNSNK4=
+github.com/dvonthenen/symbl-go-sdk v0.1.2 h1:gDacd9ajdVNxT9Jr4pshCOYGnbeOooirP/ECNR+psRE=
+github.com/dvonthenen/symbl-go-sdk v0.1.2/go.mod h1:okOH54W2rVCto2VRWNL7R1iYCBndHYebfjo5rjNSNK4=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
