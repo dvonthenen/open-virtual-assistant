@@ -92,7 +92,7 @@ func (i *Insights) InsightResponseMessage(ir *sdkinterfaces.InsightResponse) err
 			}
 
 			klog.V(3).Infof("\n\n-------------------------------\n")
-			klog.V(3).Infof("MessageResponseMessage Object DUMP:\n%v\n", string(data))
+			klog.V(3).Infof("TopicResponseMessage Object DUMP:\n%v\n", string(data))
 			klog.V(3).Infof("-------------------------------\n\n")
 			return nil
 		}
