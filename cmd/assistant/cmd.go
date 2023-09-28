@@ -10,7 +10,7 @@ import (
 
 	cfginterfaces "github.com/dvonthenen/symbl-go-sdk/pkg/client/interfaces"
 
-	assistantimpl "github.com/dvonthenen/open-virtual-assistant/cli/cmd/pkg/assistant"
+	assistantimpl "github.com/dvonthenen/open-virtual-assistant/cmd/assistant/pkg/assistant"
 	assistant "github.com/dvonthenen/open-virtual-assistant/pkg/assistant"
 	speech "github.com/dvonthenen/open-virtual-assistant/pkg/speech"
 )
