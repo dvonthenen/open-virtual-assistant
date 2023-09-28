@@ -44,7 +44,7 @@ The overall project structure...
 
 ### Assistant Framework
 
-The [pkg](https://github.com/dvonthenen/open-virtual-assistant/tree/main/pkg) folder really contains most of the code to do the heavy lifting. You can initialize the Assistant using this library. The only thing that really needs to be provided is a [Symbl Platform configuration](https://github.com/dvonthenen/open-virtual-assistant/blob/main/cli/cmd/cmd.go#L35-L49) to handle the Speech-To-Text and conversation insights likes Topics, Trackers, and etc.
+The [pkg](https://github.com/dvonthenen/open-virtual-assistant/tree/main/pkg) folder really contains most of the code to do the heavy lifting. You can initialize the Assistant using this library. The only thing that really needs to be provided is a [Symbl Platform configuration](https://github.com/dvonthenen/open-virtual-assistant/blob/main/cmd/assistant/cmd.go#L35-L49) to handle the Speech-To-Text and conversation insights likes Topics, Trackers, and etc.
 
 ```
 config := &cfginterfaces.StreamingConfig{
@@ -79,7 +79,7 @@ type InsightCallback interface {
 
 ### Example Virtual Assistant
 
-There is an example virtual assistant that is currently located in the [cli/cmd](https://github.com/dvonthenen/open-virtual-assistant/tree/main/cli/cmd) directory which provides a simplistic example of a virtual assistant.
+There is an example virtual assistant that is currently located in the [cmd/assistant](https://github.com/dvonthenen/open-virtual-assistant/tree/main/cmd/assistant) directory which provides a simplistic example of a virtual assistant.
 
 > **_IMPORTANT:_** This project structure is subject to change. In order to meet the deadlines of a presentation showcasing this project, certain shortcuts were taken. Future structure change mainly entail moving the example virtual assistant to an `example` folder at the root of the directory.
 
