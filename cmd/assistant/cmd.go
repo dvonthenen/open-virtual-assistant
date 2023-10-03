@@ -4,51 +4,37 @@
 package main
 
 import (
-	"context"
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
-	cfginterfaces "github.com/dvonthenen/symbl-go-sdk/pkg/client/interfaces"
-
-	assistantimpl "github.com/dvonthenen/open-virtual-assistant/cmd/assistant/pkg/assistant"
-	assistant "github.com/dvonthenen/open-virtual-assistant/pkg/assistant"
-	speech "github.com/dvonthenen/open-virtual-assistant/pkg/speech"
+	assistant "github.com/dvonthenen/open-virtual-assistant/cmd/assistant/pkg/assistant"
+	initlib "github.com/dvonthenen/open-virtual-assistant/pkg/init"
 )
 
 func main() {
 	/*
 		Init
 	*/
-	ctx := context.Background()
-
-	assistant.Init(assistant.AssistantInit{
-		LogLevel: assistant.LogLevelStandard,
+	initlib.Init(initlib.AssistantInit{
+		LogLevel: initlib.LogLevelStandard, // LogLevelStandard / LogLevelFull / LogLevelTrace / LogLevelVerbose
 	})
+
+	/*
+		Assistant Options
+	*/
+	oldDemo := false
+	if v := os.Getenv("ASSISTANT_OLD_DEMO"); v != "" {
+		oldDemo = strings.EqualFold(strings.ToLower(v), "true")
+	}
 
 	/*
 		Assistant
 	*/
-	callback := assistantimpl.NewInsightHandler(&speech.SpeechOpts{
-		VoiceType: speech.SpeechVoiceFemale,
+	myAssistant, err := assistant.New(&assistant.AssistantOptions{
+		OldDemo: oldDemo,
 	})
-
-	config := &cfginterfaces.StreamingConfig{
-		InsightTypes: []string{"topic", "question", "action_item", "follow_up"},
-		Config: cfginterfaces.Config{
-			MeetingTitle:        "my-meeting",
-			ConfidenceThreshold: 0.7,
-			SpeechRecognition: cfginterfaces.SpeechRecognition{
-				Encoding:        "LINEAR16",
-				SampleRateHertz: 16000,
-			},
-		},
-		Speaker: cfginterfaces.Speaker{
-			Name:   "Jane Doe",
-			UserID: "user@email.com",
-		},
-	}
-
-	myAssistant, err := assistant.NewWithConfig(ctx, config, callback)
 	if err != nil {
 		fmt.Printf("assistant.New failed. Err: %v\n", err)
 		os.Exit(1)
@@ -62,6 +48,10 @@ func main() {
 		fmt.Printf("myAssistant.Start failed. Err: %v\n", err)
 		os.Exit(1)
 	}
+
+	fmt.Print("Press ENTER to exit!\n\n")
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
 
 	// clean up
 	myAssistant.Stop()

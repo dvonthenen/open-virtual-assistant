@@ -1,7 +1,7 @@
 // Copyright 2022. All Rights Reserved.
 // SPDX-License-Identifier: MIT
 
-package assistant
+package initlib
 
 import (
 	"flag"
@@ -20,6 +20,7 @@ const (
 	LogLevelFull               = 4
 	LogLevelDebug              = 5
 	LogLevelTrace              = 6
+	LogLevelVerbose            = 7
 )
 
 type AssistantInit struct {
