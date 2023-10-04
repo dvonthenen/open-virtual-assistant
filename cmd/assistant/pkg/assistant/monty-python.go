@@ -8,14 +8,13 @@ import (
 	"fmt"
 	"time"
 
-	matchr "github.com/antzucaro/matchr"
-	micinterfaces "github.com/dvonthenen/symbl-go-sdk/pkg/audio/microphone/interfaces"
 	klog "k8s.io/klog/v2"
 
 	speech "github.com/dvonthenen/open-virtual-assistant/pkg/speech"
 )
 
-type InsightHandlerFunc func(options speech.SpeechOpts, text string) error
+// handles question...
+type InsightHandlerFunc func(options *speech.SpeechOptions, text string) error
 
 type QuestionResponse struct {
 	keys     []string
@@ -61,13 +60,16 @@ var QuestionResponses = []QuestionResponse{
 		WhatIsYourQuest,
 	},
 	{[]string{
-		TriggerUnladenSwallow,
+		TriggerUnladenSwallow1,
+		TriggerUnladenSwallow2,
+		TriggerUnladenSwallow3,
+		TriggerUnladenSwallow4,
 	},
 		WhatIsUnladenSwallow,
 	},
 }
 
-func HowAreYou(options speech.SpeechOpts, text string) error {
+func HowAreYou(options *speech.SpeechOptions, text string) error {
 	ctx := context.Background()
 
 	speechClient, err := speech.New(ctx, options)
@@ -83,7 +85,7 @@ func HowAreYou(options speech.SpeechOpts, text string) error {
 	return nil
 }
 
-func WhatTimeIsIt(options speech.SpeechOpts, text string) error {
+func WhatTimeIsIt(options *speech.SpeechOptions, text string) error {
 	ctx := context.Background()
 
 	speechClient, err := speech.New(ctx, options)
@@ -100,7 +102,7 @@ func WhatTimeIsIt(options speech.SpeechOpts, text string) error {
 	return nil
 }
 
-func WhatIsYourName(options speech.SpeechOpts, text string) error {
+func WhatIsYourName(options *speech.SpeechOptions, text string) error {
 	ctx := context.Background()
 
 	speechClient, err := speech.New(ctx, options)
@@ -116,7 +118,7 @@ func WhatIsYourName(options speech.SpeechOpts, text string) error {
 	return nil
 }
 
-func WhatIsYourQuest(options speech.SpeechOpts, text string) error {
+func WhatIsYourQuest(options *speech.SpeechOptions, text string) error {
 	ctx := context.Background()
 
 	speechClient, err := speech.New(ctx, options)
@@ -132,7 +134,7 @@ func WhatIsYourQuest(options speech.SpeechOpts, text string) error {
 	return nil
 }
 
-func WhatIsUnladenSwallow(options speech.SpeechOpts, text string) error {
+func WhatIsUnladenSwallow(options *speech.SpeechOptions, text string) error {
 	ctx := context.Background()
 
 	speechClient, err := speech.New(ctx, options)
@@ -146,35 +148,4 @@ func WhatIsUnladenSwallow(options speech.SpeechOpts, text string) error {
 	speechClient.Close()
 
 	return nil
-}
-
-func ExecuteActionOnMatch(mic micinterfaces.Microphone, options speech.SpeechOpts, text string) {
-	klog.V(4).Infof("Content: %s\n", text)
-	for _, triggers := range QuestionResponses {
-		for _, key := range triggers.keys {
-			klog.V(5).Infof("Key: %s\n", key)
-
-			if percent := matchr.JaroWinkler(key, text, false); percent > 0.95 {
-				// Mute the mic so we don't "listen" to ourself!
-				mic.Mute()
-
-				klog.V(5).Infof("\n\n--------------------------------\n")
-				klog.V(3).Infof("MATCH (%f): %s = %s", percent, key, text)
-				klog.V(5).Infof("\n--------------------------------\n\n")
-
-				fmt.Printf("Heard:\nMATCH (%f): %s = %s\n\n", percent, key, text)
-
-				err := triggers.callback(options, text)
-				if err != nil {
-					klog.V(1).Infof("actionFunc failed. Err: %v\n", err)
-				}
-
-				// Unmute!
-				mic.Unmute()
-
-				// exit on first match!
-				return
-			}
-		}
-	}
 }

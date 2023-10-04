@@ -10,6 +10,6 @@ GitHub repo: https://github.com/dvonthenen/open-virtual-assistant
 package sdk
 
 import (
-	_ "github.com/dvonthenen/open-virtual-assistant/cli/cmd"
-	_ "github.com/dvonthenen/open-virtual-assistant/pkg/assistant"
+	_ "github.com/dvonthenen/open-virtual-assistant/cmd/assistant"
+	_ "github.com/dvonthenen/open-virtual-assistant/pkg/init"
 )

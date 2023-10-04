@@ -18,32 +18,31 @@ import (
 	klog "k8s.io/klog/v2"
 )
 
-type SpeechOpts struct {
+type SpeechOptions struct {
 	VoiceType    texttospeechpb.SsmlVoiceGender
 	LanguageCode string
 }
 
-type SpeechClient struct {
-	config SpeechOpts
-
-	speechClient                 *texttospeech.Client
-	googleApplicationCredentials string
+type Client struct {
+	options           *SpeechOptions
+	client            *texttospeech.Client
+	googleCredentials string
 }
 
-func New(ctx context.Context, config SpeechOpts) (*SpeechClient, error) {
+func New(ctx context.Context, opts *SpeechOptions) (*Client, error) {
 	klog.V(6).Infof("speech.New ENTER\n")
 
-	if config.LanguageCode == "" {
-		config.LanguageCode = DefaultLanguageCode
+	if opts.LanguageCode == "" {
+		opts.LanguageCode = DefaultLanguageCode
 	}
-	if config.VoiceType == 0 {
-		config.VoiceType = SpeechVoiceNeutral
+	if opts.VoiceType == 0 {
+		opts.VoiceType = SpeechVoiceNeutral
 	}
 
-	var googleApplicationCredentials string
+	var googleCredentials string
 	if v := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"); v != "" {
 		klog.V(4).Info("GOOGLE_APPLICATION_CREDENTIALS found")
-		googleApplicationCredentials = v
+		googleCredentials = v
 	} else {
 		klog.Error("GOOGLE_APPLICATION_CREDENTIALS not found")
 		klog.V(6).Infof("speech.New LEAVE\n")
@@ -57,20 +56,20 @@ func New(ctx context.Context, config SpeechOpts) (*SpeechClient, error) {
 		return nil, err
 	}
 
-	speechClient := &SpeechClient{
-		config:                       config,
-		speechClient:                 googleClient,
-		googleApplicationCredentials: googleApplicationCredentials,
+	client := &Client{
+		options:           opts,
+		client:            googleClient,
+		googleCredentials: googleCredentials,
 	}
 
 	klog.V(3).Infof("speech.New Succeeded\n")
 	klog.V(6).Infof("speech.New LEAVE\n")
 
-	return speechClient, nil
+	return client, nil
 }
 
-func (sc *SpeechClient) TextToSpeech(ctx context.Context, text string) ([]byte, error) {
-	klog.V(6).Infof("SpeechClient.TextToSpeech ENTER\n")
+func (sc *Client) TextToSpeech(ctx context.Context, text string) ([]byte, error) {
+	klog.V(6).Infof("Client.TextToSpeech ENTER\n")
 	klog.V(4).Infof("text: %s\n", text)
 
 	// Perform the text-to-speech request on the text input with the selected
@@ -83,8 +82,8 @@ func (sc *SpeechClient) TextToSpeech(ctx context.Context, text string) ([]byte, 
 		// Build the voice request, select the language code ("en-US") and the SSML
 		// voice gender ("neutral").
 		Voice: &texttospeechpb.VoiceSelectionParams{
-			LanguageCode: sc.config.LanguageCode,
-			SsmlGender:   sc.config.VoiceType,
+			LanguageCode: sc.options.LanguageCode,
+			SsmlGender:   sc.options.VoiceType,
 		},
 		// Select the type of audio file you want returned.
 		// TODO: hardcoded since we only support MP3 currently
@@ -93,20 +92,29 @@ func (sc *SpeechClient) TextToSpeech(ctx context.Context, text string) ([]byte, 
 		},
 	}
 
-	resp, err := sc.speechClient.SynthesizeSpeech(ctx, &req)
+	resp, err := sc.client.SynthesizeSpeech(ctx, &req)
 	if err != nil {
-		klog.V(1).Infof("speechClient.SynthesizeSpeech Failed. Err: %v\n", err)
-		klog.V(6).Infof("SpeechClient.TextToSpeech LEAVE\n")
+		klog.V(1).Infof("client.SynthesizeSpeech Failed. Err: %v\n", err)
+		klog.V(6).Infof("Client.TextToSpeech LEAVE\n")
 		return []byte{}, err
 	}
 
-	klog.V(3).Infof("SpeechClient.TextToSpeech Succeeded\n")
-	klog.V(6).Infof("SpeechClient.TextToSpeech LEAVE\n")
+	klog.V(3).Infof("Client.TextToSpeech Succeeded\n")
+	klog.V(6).Infof("Client.TextToSpeech LEAVE\n")
 	return resp.AudioContent, nil
 }
 
-func (sc *SpeechClient) PlayAudio(stream []byte) error {
-	klog.V(6).Infof("SpeechClient.PlayAudio ENTER\n")
+func (sc *Client) Write(stream []byte) (int, error) {
+	size := len(stream)
+	err := sc.PlayAudio(stream)
+	if err != nil {
+		return 0, err
+	}
+	return size, nil
+}
+
+func (sc *Client) PlayAudio(stream []byte) error {
+	klog.V(6).Infof("Client.PlayAudio ENTER\n")
 
 	stringReader := bytes.NewReader(stream)
 	stringReadCloser := io.NopCloser(stringReader)
@@ -114,7 +122,7 @@ func (sc *SpeechClient) PlayAudio(stream []byte) error {
 	streamer, format, err := mp3.Decode(stringReadCloser)
 	if err != nil {
 		klog.V(1).Infof("mp3.Decode Failed. Err: %v\n", err)
-		klog.V(6).Infof("SpeechClient.PlayAudio LEAVE\n")
+		klog.V(6).Infof("Client.PlayAudio LEAVE\n")
 		return err
 	}
 	streamer.Close()
@@ -135,33 +143,33 @@ func (sc *SpeechClient) PlayAudio(stream []byte) error {
 	<-done
 
 	klog.V(3).Infof("PlayAudio Succeeded\n")
-	klog.V(6).Infof("SpeechClient.PlayAudio LEAVE\n")
+	klog.V(6).Infof("Client.PlayAudio LEAVE\n")
 
 	return nil
 }
 
-func (sc *SpeechClient) Play(ctx context.Context, text string) error {
-	klog.V(6).Infof("SpeechClient.Play ENTER\n")
+func (sc *Client) Play(ctx context.Context, text string) error {
+	klog.V(6).Infof("Client.Play ENTER\n")
 
 	stream, err := sc.TextToSpeech(ctx, text)
 	if err != nil {
 		klog.V(1).Infof("TextToSpeech Failed. Err: %v\n", err)
-		klog.V(6).Infof("SpeechClient.Play LEAVE\n")
+		klog.V(6).Infof("Client.Play LEAVE\n")
 		return err
 	}
 
 	err = sc.PlayAudio(stream)
 	if err != nil {
 		klog.V(1).Infof("PlayAudio Failed. Err: %v\n", err)
-		klog.V(6).Infof("SpeechClient.Play LEAVE\n")
+		klog.V(6).Infof("Client.Play LEAVE\n")
 		return err
 	}
 
 	klog.V(3).Infof("Play Succeeded\n")
-	klog.V(6).Infof("SpeechClient.Play LEAVE\n")
+	klog.V(6).Infof("Client.Play LEAVE\n")
 	return nil
 }
 
-func (sc *SpeechClient) Close() {
-	sc.speechClient.Close()
+func (sc *Client) Close() {
+	sc.client.Close()
 }

@@ -13,7 +13,7 @@ const (
 	QuestionWhere string = "Where"
 	QuestionWhy   string = "Why"
 
-	AssistantName string = "Symbl Suzie"
+	AssistantName string = "Kitt"
 )
 
 // triggers
@@ -36,7 +36,10 @@ const (
 
 	TriggerWhatIsYourName  string = "What is your name?"
 	TriggerWhatIsYourQuest string = "What is your quest?"
-	TriggerUnladenSwallow  string = "What is the air-speed velocity of an unladen swallow?"
+	TriggerUnladenSwallow1 string = "What is the air-speed velocity of an unladen swallow?"
+	TriggerUnladenSwallow2 string = "What is the air speed velocity of an un latent swallow?"
+	TriggerUnladenSwallow3 string = "What is the airs speed velocity of an un laden swallow?"
+	TriggerUnladenSwallow4 string = "What is the airspeed velocity of an unladen swallow?"
 )
 
 // response
