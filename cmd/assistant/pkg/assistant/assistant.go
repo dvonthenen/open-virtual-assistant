@@ -21,13 +21,15 @@ import (
 	interfaces "github.com/dvonthenen/open-virtual-assistant/pkg/interfaces"
 	speech "github.com/dvonthenen/open-virtual-assistant/pkg/speech"
 	config "github.com/dvonthenen/open-virtual-assistant/pkg/transcriber/config"
+	dgtranscriber "github.com/dvonthenen/open-virtual-assistant/pkg/transcriber/deepgram"
 	gtranscriber "github.com/dvonthenen/open-virtual-assistant/pkg/transcriber/google"
 )
 
 // constants...
 const (
 	// transcriber options
-	GOOGLE_TRANSCRIBER string = "google"
+	DEEPGRAM_TRANSCRIBER string = "deepgram"
+	GOOGLE_TRANSCRIBER   string = "google"
 )
 
 var (
@@ -96,6 +98,13 @@ func New(opts *AssistantOptions) (*Assistant, error) {
 	var transcriber interfaces.Transcriber
 
 	switch transcriberStr {
+	case DEEPGRAM_TRANSCRIBER:
+		transcribe, errTranscribe := dgtranscriber.New(ctx, opts.TranscribeOptions)
+		if errTranscribe != nil {
+			klog.V(1).Infof("dgtranscriber.New failed. Err: %v\n", errTranscribe)
+			return nil, errTranscribe
+		}
+		transcriber = transcribe
 	case GOOGLE_TRANSCRIBER:
 		fallthrough
 	default:
@@ -334,9 +343,7 @@ func (a *Assistant) Response(text string) error {
 		} else if a.activeJob != nil {
 			klog.V(2).Infof("This is not a message for Kitt. This is the start to launching a job.\n")
 
-			// TODO: commenting this out for demo purposes since this is SUPER long running
-			// cmdline := fmt.Sprintf("python ./babyagi/babyapi.py", text)
-
+			// TODO: commenting this out for demo purposes
 			// cmdline := fmt.Sprintf("./llama.cpp/main -m models/llama-2-7b-chat.Q4_K_M.gguf --color -c 4096 --temp 0.7 --repeat_penalty 1.1 -n -1 -p \"[INST] <<SYS>>You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature. If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you dont know the answer to a question, please dont share false information.<</SYS>>%s[/INST]\" 2>/dev/null",
 			// 	text)
 
@@ -347,7 +354,7 @@ func (a *Assistant) Response(text string) error {
 			// 	return err
 			// }
 
-			err := ParrotReply(a.options.SpeechOptions, fmt.Sprintf("Launching long running job will report back when finished. Prompt: %s", text))
+			err := ParrotReply(a.options.SpeechOptions, fmt.Sprintf("Launching long running job will report back when finished. Prompt: %s. Starting job now!", text))
 			if err != nil {
 				klog.V(1).Infof("personas.DefaultConfig error: %v\n", err)
 				return err
