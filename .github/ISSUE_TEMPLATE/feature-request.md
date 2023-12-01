@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Before creating a new feature request please search for any existing related [issues](https://github.com/symblai/open-virtual-assistant/issues). If you find an issue, join the discussion or add an emoji or comment with your scenario or subscribe to follow updates. -->
+<!-- Before creating a new feature request please search for any existing related [issues](https://github.com/dvonthenen/open-virtual-assistant/issues). If you find an issue, join the discussion or add an emoji or comment with your scenario or subscribe to follow updates. -->
 
 ## Feature Request
 
