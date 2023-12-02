@@ -1,7 +1,8 @@
-// Copyright 2022. All Rights Reserved.
-// SPDX-License-Identifier: MIT
+// Copyright 2023 The dvonthenen Open-Virtual-Assistant Authors. All Rights Reserved.
+// Use of this source code is governed by an Apache-2.0 license that can be found in the LICENSE file.
+// SPDX-License-Identifier: Apache-2.0
 
-package assistantimpl
+package impl
 
 import "errors"
 
@@ -49,13 +50,6 @@ const (
 )
 
 var (
-	// ErrInvalidMessageType invalid message type
-	ErrInvalidMessageType = errors.New("invalid message type")
-
-	// ErrInvalidVersionFormat is Invalid version format
-	ErrInvalidVersionFormat = errors.New("invalid version format")
-	// ErrDataReaderFailed is Datawriter is empty
-	ErrDataReaderFailed = errors.New("datareader is empty")
-	// ErrDataWriterFailed is Datawriter is empty
-	ErrDataWriterFailed = errors.New("datawriter is empty")
+	// ErrTextToSpeectInvalid text-to-speech interface is nil
+	ErrTextToSpeectInvalid = errors.New("text-to-speech interface is nil")
 )
