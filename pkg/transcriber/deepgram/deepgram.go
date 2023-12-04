@@ -63,7 +63,7 @@ func New(ctx context.Context, opts *config.TranscribeOptions) (*Transcribe, erro
 		Channels:   opts.InputChannels,
 		SampleRate: opts.SamplingRate,
 		Punctuate:  true,
-		// Keywords:   []string{"Hey Kitt:32", "Hey Kit:16", "Hey:16", "Hello:16", "Hey:16", "Kitt:16", "Kit:16"},
+		Keywords:   []string{"Hey Kitt:32", "Hey Kit:16", "Hey:16", "Hello:16", "Hey:16", "Kitt:16", "Kit:16"},
 		// Endpointing: "500",
 	}
 	// klog.V(2).Infof("options: %v\n", options)
@@ -87,7 +87,7 @@ func New(ctx context.Context, opts *config.TranscribeOptions) (*Transcribe, erro
 		mic:     mic,
 	}
 
-	klog.V(3).Infof("transcribe.New Succeeded\n")
+	klog.V(4).Infof("transcribe.New Succeeded\n")
 	klog.V(6).Infof("transcribe.New LEAVE\n")
 
 	return transcribe, nil
@@ -119,7 +119,7 @@ func (a *Transcribe) Start() error {
 		a.mic.Stream(a.client)
 	}()
 
-	klog.V(3).Infof("transcribe.Start Succeeded\n")
+	klog.V(4).Infof("transcribe.Start Succeeded\n")
 	klog.V(6).Infof("transcribe.Start LEAVE\n")
 	return nil
 }

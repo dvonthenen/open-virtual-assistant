@@ -44,7 +44,7 @@ func (i *Insights) Message(mr *api.MessageResponse) error {
 	sentence := strings.TrimSpace(mr.Channel.Alternatives[0].Transcript)
 
 	if len(mr.Channel.Alternatives) == 0 || len(sentence) == 0 {
-		// klog.V(7).Infof("DEEPGRAM - no transcript")
+		klog.V(7).Infof("DEEPGRAM - no transcript\n")
 		return nil
 	}
 
@@ -52,16 +52,16 @@ func (i *Insights) Message(mr *api.MessageResponse) error {
 	sentence = strings.ToLower(sentence)
 	i.sb.WriteString(sentence)
 
-	// // debug
-	// klog.V(4).Infof("transcription result: text = %s, final = %t", i.sb.String(), isFinal)
+	// debug
+	klog.V(7).Infof("transcription result: text = %s, final = %t\n", i.sb.String(), isFinal)
 
 	if !isFinal {
-		// klog.V(7).Infof("DEEPGRAM - not final")
+		klog.V(7).Infof("DEEPGRAM - not final\n")
 		return nil
 	}
 
 	// debug
-	klog.V(2).Infof("Deepgram transcription: text = %s, final = %t", i.sb.String(), isFinal)
+	klog.V(3).Infof("Deepgram transcription: text = %s, final = %t", i.sb.String(), isFinal)
 
 	// perform callback
 	i.options.Microphone.Mute()
@@ -75,9 +75,9 @@ func (i *Insights) Message(mr *api.MessageResponse) error {
 }
 
 func (i *Insights) Metadata(md *api.MetadataResponse) error {
-	klog.V(3).Infof("\nMetadata.RequestID: %s\n", strings.TrimSpace(md.RequestID))
-	klog.V(3).Infof("Metadata.Channels: %d\n", md.Channels)
-	klog.V(3).Infof("Metadata.Created: %s\n\n", strings.TrimSpace(md.Created))
+	klog.V(4).Infof("\nMetadata.RequestID: %s\n", strings.TrimSpace(md.RequestID))
+	klog.V(4).Infof("Metadata.Channels: %d\n", md.Channels)
+	klog.V(4).Infof("Metadata.Created: %s\n\n", strings.TrimSpace(md.Created))
 
 	return nil
 }

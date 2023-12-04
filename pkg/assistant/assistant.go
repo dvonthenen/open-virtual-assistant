@@ -55,7 +55,7 @@ func New(assistantImpl *ainterfaces.AssistantImpl, opts *AssistantOptions) (*Ass
 	// which transcriber?
 	var transcriberStr string
 	if v := os.Getenv("ASSISTANT_TRANSCRIBER"); v != "" {
-		klog.V(2).Infof("ASSISTANT_TRANSCRIBER found")
+		klog.V(2).Infof("ASSISTANT_TRANSCRIBER found\n")
 		transcriberStr = v
 	}
 

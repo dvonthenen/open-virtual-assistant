@@ -104,7 +104,7 @@ func (a *MyAssistant) Response(text string) error {
 
 			if percent := matchr.JaroWinkler(key, text, false); percent > 0.95 {
 				klog.V(5).Infof("\n\n--------------------------------\n")
-				klog.V(3).Infof("MATCH (%f): %s = %s\n", percent, key, text)
+				klog.V(4).Infof("MATCH (%f): %s = %s\n", percent, key, text)
 				klog.V(5).Infof("\n--------------------------------\n\n")
 
 				klog.V(2).Infof("Heard:\nMATCH (%f): %s = %s\n\n", percent, key, text)
