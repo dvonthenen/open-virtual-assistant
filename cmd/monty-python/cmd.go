@@ -13,7 +13,7 @@ import (
 	interfaces "github.com/dvonthenen/open-virtual-assistant/pkg/assistant/interfaces"
 	initlib "github.com/dvonthenen/open-virtual-assistant/pkg/init"
 
-	assistantimpl "github.com/dvonthenen/open-virtual-assistant/cmd/assistant/impl"
+	assistantimpl "github.com/dvonthenen/open-virtual-assistant/cmd/monty-python/impl"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 	/*
 		Assistant
 	*/
-	myAssistant := assistantimpl.New()
+	myAssistant := &assistantimpl.MyAssistant{}
 
 	var assistImpl interfaces.AssistantImpl
 	assistImpl = myAssistant

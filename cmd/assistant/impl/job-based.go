@@ -1,35 +1,14 @@
-// Copyright 2022. All Rights Reserved.
-// SPDX-License-Identifier: MIT
+// Copyright 2023 The dvonthenen Open-Virtual-Assistant Authors. All Rights Reserved.
+// Use of this source code is governed by an Apache-2.0 license that can be found in the LICENSE file.
+// SPDX-License-Identifier: Apache-2.0
 
-package assistantimpl
+package impl
 
 import (
-	"errors"
 	"io"
 	"os/exec"
 
 	klog "k8s.io/klog/v2"
-)
-
-const (
-	CHUNK_SIZE = 1024 * 2
-)
-
-var (
-	//ErrBufferCreateFailed creating the buffer failed
-	ErrBufferCreateFailed = errors.New("Unable to create the buffer object")
-
-	//ErrScannerCreateFailed creating the scanner failed
-	ErrScannerCreateFailed = errors.New("Unable to create the scanner object")
-
-	//ErrReaderCreateFailed creating the reader failed
-	ErrReaderCreateFailed = errors.New("Unable to create the reader object")
-
-	//ErrCommandCreateFailed creating the command failed
-	ErrCommandCreateFailed = errors.New("Unable to create the command object")
-
-	//ErrExecuteFailed installation package failed
-	ErrExecuteFailed = errors.New("The command line failed to execute correctly")
 )
 
 func command(cmdLine string, w io.Writer, stopChan chan struct{}) error {
@@ -75,8 +54,4 @@ func command(cmdLine string, w io.Writer, stopChan chan struct{}) error {
 			klog.V(7).Infof("io.Writer succeeded. Bytes written: %d\n", bytesRead)
 		}
 	}
-
-	klog.V(1).Infof("Cmdline implicitly failed to execute correctly")
-	klog.V(6).Infof("command LEAVE\n")
-	return ErrExecuteFailed
 }
