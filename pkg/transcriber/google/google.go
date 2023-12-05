@@ -136,7 +136,7 @@ func (t *Transcribe) Start() error {
 		t.mic.Stream(t)
 	}()
 
-	klog.V(3).Infof("transcribe.Start Succeeded\n")
+	klog.V(4).Infof("transcribe.Start Succeeded\n")
 	klog.V(6).Infof("transcribe.Start LEAVE\n")
 	return nil
 }
@@ -275,7 +275,7 @@ func (t *Transcribe) listen() {
 
 					// Debug... what is being said word for word
 					sentence := sb.String()
-					klog.V(2).Infof("google transcription: text=%s final=%t\n", sentence, result.IsFinal)
+					klog.V(3).Infof("google transcription: text=%s final=%t\n", sentence, result.IsFinal)
 
 					if t.options.Callback != nil {
 						t.mic.Mute()

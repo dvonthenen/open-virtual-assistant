@@ -65,7 +65,7 @@ func New(ctx context.Context, opts *SpeechOptions) (*Client, error) {
 		googleCredentials: googleCredentials,
 	}
 
-	klog.V(3).Infof("speech.New Succeeded\n")
+	klog.V(4).Infof("speech.New Succeeded\n")
 	klog.V(6).Infof("speech.New LEAVE\n")
 
 	return client, nil
@@ -102,7 +102,7 @@ func (sc *Client) TextToSpeech(ctx context.Context, text string) ([]byte, error)
 		return []byte{}, err
 	}
 
-	klog.V(3).Infof("Client.TextToSpeech Succeeded\n")
+	klog.V(4).Infof("Client.TextToSpeech Succeeded\n")
 	klog.V(6).Infof("Client.TextToSpeech LEAVE\n")
 	return resp.AudioContent, nil
 }
@@ -145,7 +145,7 @@ func (sc *Client) PlayAudio(stream []byte) error {
 	// wait until done... blocking!
 	<-done
 
-	klog.V(3).Infof("PlayAudio Succeeded\n")
+	klog.V(4).Infof("PlayAudio Succeeded\n")
 	klog.V(6).Infof("Client.PlayAudio LEAVE\n")
 
 	return nil
@@ -168,7 +168,7 @@ func (sc *Client) Play(ctx context.Context, text string) error {
 		return err
 	}
 
-	klog.V(3).Infof("Play Succeeded\n")
+	klog.V(4).Infof("Play Succeeded\n")
 	klog.V(6).Infof("Client.Play LEAVE\n")
 	return nil
 }
