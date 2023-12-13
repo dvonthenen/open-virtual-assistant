@@ -102,7 +102,7 @@ func (a *MyAssistant) Response(text string) error {
 		for _, key := range triggers.keys {
 			klog.V(5).Infof("Key: %s\n", key)
 
-			if percent := matchr.JaroWinkler(key, text, false); percent > 0.95 {
+			if percent := matchr.JaroWinkler(key, text, false); percent > 0.8 {
 				klog.V(5).Infof("\n\n--------------------------------\n")
 				klog.V(4).Infof("MATCH (%f): %s = %s\n", percent, key, text)
 				klog.V(5).Infof("\n--------------------------------\n\n")
