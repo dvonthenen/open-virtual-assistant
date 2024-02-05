@@ -21,7 +21,7 @@ func main() {
 		Init
 	*/
 	initlib.Init(initlib.AssistantInit{
-		LogLevel: initlib.LogLevelStandard, // LogLevelStandard / LogLevelFull / LogLevelTrace / LogLevelVerbose
+		LogLevel: initlib.LogLevelDefault, // LogLevelStandard / LogLevelFull / LogLevelTrace / LogLevelVerbose
 	})
 
 	/*
